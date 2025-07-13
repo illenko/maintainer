@@ -101,10 +101,10 @@ Backend service to manage system component accessibility status. Provides availa
 7. ✅ Create Liquibase migrations with YAML format
 8. ✅ Convert application.properties to application.yml
 9. ✅ Create domain entities for Spring Data JDBC with UUID
-10. ✅ Implement database repositories
+10. ✅ Implement database repositories (simplified CRUD)
 11. ✅ Create API models (DTOs) for request/response
 12. ✅ Implement service layer with business logic and mapping
-13. ⏳ Implement REST controllers
+13. ✅ Implement REST controllers with global exception handling
 14. ⏳ Add caching for status API
 
 ## Current Status
@@ -112,18 +112,33 @@ Backend service to manage system component accessibility status. Provides availa
 ### ✅ Completed Features
 - **Database Layer**: PostgreSQL with Liquibase YAML migrations, UUID primary keys with `gen_random_uuid()`
 - **Domain Entities**: Component, Outage, OutageType, ComponentStatus with Spring Data JDBC annotations
-- **Repositories**: ComponentRepository and OutageRepository with custom queries for status calculation
+- **Repositories**: Simple CRUD repositories without pagination complexity
 - **API Models**: Separate DTOs for requests/responses with Jakarta validation
 - **Service Layer**: ComponentService and OutageService with business logic and proper transaction boundaries
 - **Custom Exceptions**: Domain-specific exceptions (ComponentNotFoundException, etc.)
 - **Kotlin Extensions**: Mapping functions using extension methods (toEntity(), toResponse(), etc.)
+- **REST Controllers**: Complete REST API with proper error handling
+- **Global Exception Handler**: Centralized error handling with consistent response format
 
-### 🚧 In Progress
-- REST Controllers implementation
+### 🚧 Current API Endpoints
+- `GET /api/v1/components` - Get all components
+- `GET /api/v1/components/{id}` - Get component by ID
+- `GET /api/v1/components/name/{name}` - Get component by name
+- `POST /api/v1/components` - Create component
+- `PUT /api/v1/components/{id}` - Update component
+- `DELETE /api/v1/components/{id}` - Delete component
+- `GET /api/v1/status/{componentName}` - Get component status (fast API)
+- `GET /api/v1/outages` - Get all outages
+- `GET /api/v1/outages/{id}` - Get outage by ID
+- `POST /api/v1/outages` - Create outage
+- `PUT /api/v1/outages/{id}` - Update outage
+- `PUT /api/v1/outages/{id}/resolve` - Resolve ongoing outage
+- `DELETE /api/v1/outages/{id}` - Delete outage
 
 ### ⏳ Pending
 - Caching strategy for status API
 - Horizontal scaling considerations
+- Optional: Add back pagination/filtering if needed
 
 ## End-to-End Test Cases
 

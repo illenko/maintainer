@@ -3,9 +3,9 @@ spring:
     name: maintainer
   
   datasource:
-    url: jdbc:postgresql://localhost:5432/maintainer
-    username: ${DB_USERNAME:maintainer}
-    password: ${DB_PASSWORD:maintainer}
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
     driver-class-name: org.postgresql.Driver
   
   liquibase:

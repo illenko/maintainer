@@ -11,8 +11,6 @@ import com.example.maintainer.mapper.toResponse
 import com.example.maintainer.mapper.updateFrom
 import com.example.maintainer.repository.ComponentRepository
 import com.example.maintainer.repository.OutageRepository
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -52,16 +50,8 @@ class ComponentService(
     }
 
     @Transactional(readOnly = true)
-    fun getComponents(
-        filter: com.example.maintainer.api.ComponentFilter,
-        pageable: Pageable,
-    ): Page<ComponentResponse> {
-        return if (filter.hasFilters()) {
-            componentRepository.findByFilter(filter, pageable)
-        } else {
-            componentRepository.findAll(pageable)
-        }.map { it.toResponse() }
-    }
+    fun getAllComponents(): List<ComponentResponse> =
+        componentRepository.findAll().map { it.toResponse() }
 
     fun updateComponent(
         id: UUID,

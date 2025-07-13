@@ -1,13 +1,9 @@
 package com.example.maintainer.controller
 
-import com.example.maintainer.api.ComponentFilter
 import com.example.maintainer.api.ComponentRequest
 import com.example.maintainer.api.ComponentResponse
 import com.example.maintainer.service.ComponentService
 import jakarta.validation.Valid
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
-import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -17,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
@@ -51,12 +46,8 @@ class ComponentController(
     }
 
     @GetMapping
-    fun getComponents(
-        @PageableDefault(size = 20) pageable: Pageable,
-        @RequestParam(required = false) search: String?,
-    ): ResponseEntity<Page<ComponentResponse>> {
-        val filter = ComponentFilter(search = search)
-        val response = componentService.getComponents(filter, pageable)
+    fun getAllComponents(): ResponseEntity<List<ComponentResponse>> {
+        val response = componentService.getAllComponents()
         return ResponseEntity.ok(response)
     }
 
