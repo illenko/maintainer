@@ -1,0 +1,77 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-outages-table
+      author: maintainer-system
+      changes:
+        - createTable:
+            tableName: outages
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: component_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: from_time
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: to_time
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: true
+              - column:
+                  name: reason
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: outages
+            baseColumnNames: component_id
+            referencedTableName: components
+            referencedColumnNames: id
+            constraintName: fk_outages_component_id
+            onDelete: CASCADE
+        - createIndex:
+            indexName: idx_outages_component_id
+            tableName: outages
+            columns:
+              - column:
+                  name: component_id
+        - createIndex:
+            indexName: idx_outages_time_range
+            tableName: outages
+            columns:
+              - column:
+                  name: from_time
+              - column:
+                  name: to_time
+        - createIndex:
+            indexName: idx_outages_type
+            tableName: outages
+            columns:
+              - column:
+                  name: type

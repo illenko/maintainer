@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: maintainer
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/maintainer
+    username: ${DB_USERNAME:maintainer}
+    password: ${DB_PASSWORD:maintainer}
+    driver-class-name: org.postgresql.Driver
+  
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yml
+  
+  jdbc:
+    template:
+      query-timeout: 30s
+
+logging:
+  level:
+    com.example.maintainer: DEBUG
+    org.springframework.jdbc: DEBUG

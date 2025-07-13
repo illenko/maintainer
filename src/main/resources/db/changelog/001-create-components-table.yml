@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-components-table
+      author: maintainer-system
+      changes:
+        - createTable:
+            tableName: components
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+        - createIndex:
+            indexName: idx_components_name
+            tableName: components
+            columns:
+              - column:
+                  name: name
