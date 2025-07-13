@@ -52,17 +52,15 @@ class ComponentService(
     }
 
     @Transactional(readOnly = true)
-    fun getAllComponents(pageable: Pageable): Page<ComponentResponse> =
-        componentRepository
-            .findAll(pageable)
-            .map { it.toResponse() }
-
-    @Transactional(readOnly = true)
-    fun searchComponents(namePattern: String): List<ComponentResponse> {
-        val pattern = "%${namePattern.lowercase()}%"
-        return componentRepository
-            .findByNameContainingIgnoreCase(pattern)
-            .map { it.toResponse() }
+    fun getComponents(
+        filter: com.example.maintainer.api.ComponentFilter,
+        pageable: Pageable,
+    ): Page<ComponentResponse> {
+        return if (filter.hasFilters()) {
+            componentRepository.findByFilter(filter, pageable)
+        } else {
+            componentRepository.findAll(pageable)
+        }.map { it.toResponse() }
     }
 
     fun updateComponent(

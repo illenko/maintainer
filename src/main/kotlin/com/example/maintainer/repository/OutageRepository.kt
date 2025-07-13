@@ -1,7 +1,8 @@
 package com.example.maintainer.repository
 
 import com.example.maintainer.domain.Outage
-import com.example.maintainer.domain.OutageType
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jdbc.repository.query.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.PagingAndSortingRepository
@@ -13,10 +14,6 @@ import java.util.UUID
 interface OutageRepository :
     CrudRepository<Outage, UUID>,
     PagingAndSortingRepository<Outage, UUID> {
-    fun findByComponentId(componentId: UUID): List<Outage>
-
-    fun findByType(type: OutageType): List<Outage>
-
     @Query(
         """
         SELECT * FROM outages 
@@ -30,32 +27,21 @@ interface OutageRepository :
         currentTime: LocalDateTime,
     ): List<Outage>
 
-    @Query("SELECT * FROM outages WHERE to_time IS NULL")
-    fun findOngoingOutages(): List<Outage>
-
     @Query(
         """
-        SELECT * FROM outages 
-        WHERE from_time >= :fromDate 
-        AND from_time <= :toDate
-        ORDER BY from_time DESC
+        SELECT * FROM outages o
+        WHERE (:#{#filter.type} IS NULL OR o.type = :#{#filter.type})
+        AND (:#{#filter.componentId} IS NULL OR o.component_id = :#{#filter.componentId})
+        AND (:#{#filter.ongoing} IS NULL OR 
+             (:#{#filter.ongoing} = true AND o.to_time IS NULL) OR
+             (:#{#filter.ongoing} = false AND o.to_time IS NOT NULL))
+        AND (:#{#filter.fromDate} IS NULL OR o.from_time >= :#{#filter.fromDate})
+        AND (:#{#filter.toDate} IS NULL OR o.from_time <= :#{#filter.toDate})
+        ORDER BY o.from_time DESC
         """,
     )
-    fun findByDateRange(
-        fromDate: LocalDateTime,
-        toDate: LocalDateTime,
-    ): List<Outage>
-
-    @Query(
-        """
-        SELECT * FROM outages 
-        WHERE component_id = :componentId 
-        AND type = :type
-        ORDER BY from_time DESC
-        """,
-    )
-    fun findByComponentIdAndType(
-        componentId: UUID,
-        type: OutageType,
-    ): List<Outage>
+    fun findByFilter(
+        filter: com.example.maintainer.api.OutageFilter,
+        pageable: Pageable,
+    ): Page<Outage>
 }

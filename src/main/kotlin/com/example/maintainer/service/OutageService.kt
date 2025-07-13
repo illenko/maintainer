@@ -50,42 +50,19 @@ class OutageService(
     }
 
     @Transactional(readOnly = true)
-    fun getAllOutages(pageable: Pageable): Page<OutageResponse> {
-        return outageRepository.findAll(pageable)
-            .map { outage ->
-                val component = componentRepository.findById(outage.componentId)
-                    .orElseThrow { ComponentNotFoundException(outage.componentId.toString()) }
-                outage.toResponse(component.name)
-            }
-    }
-
-    @Transactional(readOnly = true)
-    fun getOutagesByComponent(componentId: UUID, pageable: Pageable): List<OutageResponse> {
-        val component = componentRepository.findById(componentId)
-            .orElseThrow { ComponentNotFoundException(componentId.toString()) }
-
-        return outageRepository.findByComponentId(componentId)
-            .map { it.toResponse(component.name) }
-    }
-
-    @Transactional(readOnly = true)
-    fun getOutagesByType(type: OutageType): List<OutageResponse> {
-        return outageRepository.findByType(type)
-            .map { outage ->
-                val component = componentRepository.findById(outage.componentId)
-                    .orElseThrow { ComponentNotFoundException(outage.componentId.toString()) }
-                outage.toResponse(component.name)
-            }
-    }
-
-    @Transactional(readOnly = true)
-    fun getOngoingOutages(): List<OutageResponse> {
-        return outageRepository.findOngoingOutages()
-            .map { outage ->
-                val component = componentRepository.findById(outage.componentId)
-                    .orElseThrow { ComponentNotFoundException(outage.componentId.toString()) }
-                outage.toResponse(component.name)
-            }
+    fun getOutages(
+        filter: com.example.maintainer.api.OutageFilter,
+        pageable: Pageable,
+    ): Page<OutageResponse> {
+        return if (filter.hasFilters()) {
+            outageRepository.findByFilter(filter, pageable)
+        } else {
+            outageRepository.findAll(pageable)
+        }.map { outage ->
+            val component = componentRepository.findById(outage.componentId)
+                .orElseThrow { ComponentNotFoundException(outage.componentId.toString()) }
+            outage.toResponse(component.name)
+        }
     }
 
     fun updateOutage(id: UUID, request: OutageRequest): OutageResponse {
